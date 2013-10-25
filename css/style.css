@@ -1,0 +1,187 @@
+/*************/
+/*  Reset   */
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:top;background:transparent;vertical-align: baseline}
+body{line-height:1;}
+td {vertical-align: top}
+ol,ul{list-style:none;}
+blockquote,q{quotes:none;}
+blockquote:before,blockquote:after,
+q:before,q:after{content:'';content:none;}
+:focus{outline:0;}
+ins{text-decoration:none;}
+del{text-decoration:line-through;}
+table{border-collapse:collapse;border-spacing:0;}
+a{color:#fff;text-decoration:none}
+button::-moz-focus-inner {border:0;}
+html {}
+body {color:#fff;font:1em/1.4 Arial,Helvetica,sans-serif;}
+header, footer, nav, section, aside, article {display:block;}
+input, select, option, textarea, a, a:active {outline:none;}
+
+
+
+/*************/
+/* Template */
+
+body, html {
+	height:100%;
+	background:#000;
+}
+
+/* Header */
+header {
+	position: relative;
+	width:100%;
+	height:130px;
+	background-color:rgba(0,0,0,0.35);
+	-webkit-box-sizing: border-box; 
+	-moz-box-sizing: border-box;    
+	box-sizing: border-box;   
+	border-bottom: 1px solid #FFFFFF;
+	z-index: 1; 
+}
+
+/* Wrapper  */
+.wrapper {
+	display:none;
+	position: relative;
+	margin:0 auto;
+	width:980px;
+	height:100%;
+	margin-top:-130px;
+	text-align:left;
+	background-color:rgba(255,255,255,0.15);
+	z-index: 10; 
+	overflow:hidden;
+}
+
+/* Footer */
+footer {
+	width:100%;
+	height:50px;
+	background-color:rgba(0,0,0,1);
+	border-top:1px solid #fff;
+	-webkit-box-sizing: border-box; 
+	-moz-box-sizing: border-box;    
+	box-sizing: border-box;    
+	position: absolute;
+	bottom:0;
+	z-index: 2; 
+	
+}
+
+
+
+
+
+
+
+/***********************************/
+/*-------------Gallery------------*/
+
+#gallery {
+	position: absolute;
+	overflow: hidden;
+	text-align: left;
+	bottom:50px;
+	top:0;
+	left:0;
+	right:0;
+}
+#gallery-holder{
+   	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 0;
+	min-width:980px;
+}
+.topImg{
+	z-index: 1;
+}
+.bottomImg{
+	z-index: 0;
+}
+.thumb-holder{
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	width: 940px;
+	margin-left: -435px;
+	margin-top: 218px;
+	z-index: 2;
+	opacity:0; /*this is important the app fades it in */
+}
+.thumb-holder ul{
+	overflow:hidden;
+}
+.thumb-holder ul>li{
+	float: left;
+	margin-right: 5px;
+}
+.bg-gallery-btn {
+	background: url("../images/thumbs.png") -1px -1px no-repeat;
+	width: 21px;
+	height: 21px;
+}
+.bg-gallery-btn-over{
+	background-position:-1px -27px;
+	position: absolute;
+}
+.bg-gallery-btn-out{
+	// 
+}
+.content-holder{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -148px;
+    margin-left: -440px;
+    z-index: 2;
+}
+.content-holder>li{
+    position: absolute;
+    width: 940px;
+}
+.imgSpinner {
+	background:transparent url("../images/spinner.gif") 0 0 no-repeat;
+	height:40px;
+	width:40px;
+	margin:20px 0 0;
+}
+.image-holder .imgSpinner {
+	position:absolute;
+	top:50%;
+	left:50%;
+}
+
+
+
+/*-------------Gallery Description Elements------------*/
+
+.content-holder li a {
+	transition:all 0.25s linear;
+    display:inline-block;
+    background-color:rgba(0,0,0,0.4);
+    font-size:1em;
+    font-weight:bold;
+    padding:5px 10px;
+    margin:15px 0 0 2px;
+}
+.content-holder li a:hover {
+	background-color:rgba(0,0,0,0.7);
+}	
+.content-holder h2, 
+.content-holder strong {
+	text-transform: uppercase;
+	text-shadow: 2px 2px 3px #000;
+}
+.content-holder h2 { 
+	font-size:6em;
+    letter-spacing: -2px;
+    margin: 0 0 5px -5px;
+}
+.content-holder strong {
+	display:block;
+	font-size:3em;
+	line-height:1em;
+}
