@@ -10,40 +10,48 @@
 			autoPlayState	: false,
 			autoPlayTime 	: 4,
 			alignIMG 		: "center",
-			boundary 		: $(document) 
+			boundary 		: $(document),
+			loading 		: null,
+			unloading 		: null
 		};
 
 
 	var FullscreenSlider = function(element, options)
     {
 		var
-			obj 	= element,			// The original collection
-			$obj    = $(obj)			// jQuery the objects
+			$obj    = $(element)		// jQuery the objects
 			$this 	= this;				// Reference for closures
 
-			
+		// Options	
 		this.options = $.extend({}, defaults, options);
 
 
-		this.init = function()
+		var init = function()
 		{
 			setElements();
 			setEvents();
 			start();
-			return this;
 		};
 
 		var setElements = function()
 		{
 			$this.image 		= $('<img>');
-			$this.imageHolder 	= $(".image-holder", obj);
-			$this.discription 	= $(".content-holder>li", obj); 	// I know it's misspelt, but in IE its a reserved word :p
-	 		$this.thumbsHolder 	= $(".thumb-holder", obj);
+			$this.imageHolder 	= $(".image-holder", $obj);
+			$this.discription 	= $(".content-holder>li", $obj); 	// I know it's misspelt, but in IE its a reserved word :p
+	 		$this.thumbsHolder 	= $(".thumb-holder", $obj);
 	 		$this.imageSRCLink 	= $("ul>li>a", $this.thumbsHolder);
 			$this.currImg 		= 0;
 			$this.prevImg 		= 0;
 			$this.loadComplete 	= true;
 			$this.autoPlayTimer;	
+			// Set a default loading event if none specified
+			if(!$this.options.loading) {
+				$this.options.loading = loading;
+			}
+			// Set a default unloading event if none specified
+			if(!$this.options.unloading) {
+				$this.options.unloading = unloading;
+			}
 		};
 
 		var setEvents = function()
@@ -57,7 +65,7 @@
 		var start = function()
 		{
 			// Create a loading spinner while first image loads
-			$obj.append(createSpinner());
+			$this.options.loading();
 
 			// Begin loading the first image
 			var source = $($this.imageSRCLink[0]);
@@ -94,11 +102,8 @@
 
 		var firstImage = function() 
 		{
-			// Find the spinner, fade it out and remove it
-			var spinner = $obj.find('.imgSpinner');
-			spinner.animate({opacity:0}, 600, "easeInOutCubic", function(){
-				spinner.remove();
-			});
+			// Unloading animation
+			$this.options.unloading();
 			// Append the image and fade it in
 			$this.imageHolder.append($this.image.css('opacity', 0).animate({opacity:1}, 600, "easeInOutCubic"));
 			// Show the thumbnail menu
@@ -165,6 +170,23 @@
 
 			obj.stop(queue).animate(css, delta, "easeInOutCubic");	
 		}
+		var loading = function()
+		{
+			$obj.append(
+				createSpinner()
+				.css({opacity:0})
+				.stop()
+				.animate({opacity:1}, 600, "easeInOutCubic")
+			);
+		};
+		var unloading = function()
+		{
+			var spinner = $obj.find('.imgSpinner');
+			spinner.animate({opacity:0}, 600, "easeInOutCubic", function(){
+				spinner.remove();
+			});
+		};
+
 		/* Factory */
 		var createSpinner = function() 
 		{
@@ -175,8 +197,7 @@
 			return $('<div class="bg-gallery-btn"></div>').addClass('bg-gallery-btn-'+flag).css((css||{})) 
 		}
 
-
-
+		
 
 		/*******************/
 		/* Public Methods */
@@ -190,12 +211,7 @@
 			this.image.addClass("topImg");
 
 			this.imageHolder.append("<img class='bottomImg' src='"+source.attr("href")+"' alt='"+(source.attr("title") || '')+"'>");
-			$obj.append(
-				createSpinner()
-				.css({opacity:0})
-				.stop()
-				.animate({opacity:1}, 500, "easeInOutCubic")
-			);
+			this.options.loading();
 
 			$(".bottomImg").bind("load", this.loadImageHandler);	
 			
@@ -209,14 +225,12 @@
 		{
 			setTimeout(function(){
 				var 
-					spinner 	= $(".imgSpinner"),
 					bottomImg 	= $(".bottomImg").unbind("load", this.loadImageHandler);
-				
-				spinner.stop().animate({opacity:"0"}, 1000, "easeInOutCubic")
+				// Unloading anim
+				$this.options.unloading();
 				$this.resizeImageHandler();
 				$(".topImg").stop().animate({opacity:"0"}, 1000, "easeInOutCubic", function(){
 					$(this).remove();
-					spinner.remove();
 					bottomImg.removeClass("bottomImg");
 					$this.loadComplete = true;
 					autoPlayHandler();
@@ -338,22 +352,36 @@
 			return this.goTo(tmp);
 		}
 
-		/* Look up */
-		this.isNotCurrentIndex = function(obj) 
+		this.play = function() 
 		{
-			return (obj.parent().index()!=this.currImg);
+			// todo
+		}
+
+		this.stop = function() 
+		{
+			// todo
+		}
+
+		
+
+		/* Look up */
+		this.isNotCurrentIndex = function(o) 
+		{
+			return (o.parent().index()!=this.currImg);
 		}
 		this.returnCurrentThumbnail = function(index) 
 		{
 			return $("ul>li", this.thumbsHolder).eq((index || this.currImg));
 		}
-		this.getCurrentSlide = function(obj) 
+		this.getCurrentSlide = function() 
 		{
 			return this.currImg;
 		}
 
-		// Start
-		return this.init();
+		//start
+		init();
+
+		return this;
 	};
 
 
