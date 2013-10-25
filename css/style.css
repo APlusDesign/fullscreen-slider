@@ -67,12 +67,31 @@ footer {
 	position: absolute;
 	bottom:0;
 	z-index: 2; 
-	
+	text-align:center;
 }
 
-
-
-
+footer ul {
+	width:980px;
+	margin:0 auto;
+	padding:0 0 0 100px;
+}
+footer ul li {
+	float:left;
+	margin:8px 10px 0;
+}
+footer ul li a{
+	display:inline-block;
+	background:#fff;
+	padding:5px 10px;
+	border-radius:3px;
+	color:#000;
+	font-weight:bold;
+}
+footer ul li input {
+	height:20px;
+	margin:0 0 0 2px;
+	width:20px;
+}
 
 
 

@@ -66,7 +66,7 @@
 			// Build the thumbnails now but don't show them until the first image has loaded.
 			buildThumbnails();
 		};
-		
+
 		var autoPlayHandler = function(){
 			var allImg = $this.imageSRCLink.length;
 			autoPlayTimer = setTimeout(function(){
@@ -321,7 +321,10 @@
 		this.returnCurrentThumbnail = function(index) {
 			return $("ul>li", this.thumbsHolder).eq((index || this.currImg));
 		}
-		
+		this.getCurrentSlide = function(obj) {
+			return this.currImg;
+		}
+
 		// Start
 		return this.init();
 	};
