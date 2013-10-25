@@ -71,9 +71,9 @@ footer {
 }
 
 footer ul {
-	width:980px;
+	display:inline-block;
 	margin:0 auto;
-	padding:0 0 0 100px;
+	overflow:hidden;
 }
 footer ul li {
 	float:left;
@@ -166,12 +166,12 @@ footer ul li input {
 	height:40px;
 	width:40px;
 	margin:20px 0 0;
-}
-.image-holder .imgSpinner {
 	position:absolute;
 	top:50%;
 	left:50%;
+	z-index:4;
 }
+
 
 
 
