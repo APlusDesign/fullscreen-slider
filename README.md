@@ -18,7 +18,7 @@ Not really.
 
 There are no free or commercial products that allow you to basically use the entire document space as your slider that handle large background imagery properly!
 
-All the sliders I looked at load your images at the beginning and really destroy the user experience, imagine loading 5 1 mb images while your users stare at a blank screen, then the user never clicks the links that show them? Pretty silly right!
+All the sliders I looked at load your images at the beginning and really destroy the user experience, imagine loading 5, 1mb images while your users stare at a blank screen, then the user never clicks the links that show them? Pretty silly right!
 
 
 
@@ -42,3 +42,11 @@ So enjoy! :)
 
 Working on it :(
 
+
+###Options
+
+    autoPlayState	: false, 			// Auto play the slideshow (bool: true || false)
+	autoPlayTime 	: 4,				// The time between slides in seconds when auto play is set to true
+	alignIMG 		: "center",			// How to align the background image, defaults to center. Available (top, bottom, right, left, top_left, top_right, bottom_left, bottom_right)
+	boundary 		: $(document), 		// The wrapper in which the slider sits, default to document as this is mean to be a fullscreen slider.
+	startAtSlide 	: 0 				// Which slide to start at (int)

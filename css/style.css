@@ -41,20 +41,6 @@ header {
 	z-index: 1; 
 }
 
-/* Wrapper  */
-.wrapper {
-	display:none;
-	position: relative;
-	margin:0 auto;
-	width:980px;
-	height:100%;
-	margin-top:-130px;
-	text-align:left;
-	background-color:rgba(255,255,255,0.15);
-	z-index: 10; 
-	overflow:hidden;
-}
-
 /* Footer */
 footer {
 	width:100%;
@@ -70,28 +56,7 @@ footer {
 	text-align:center;
 }
 
-footer ul {
-	display:inline-block;
-	margin:0 auto;
-	overflow:hidden;
-}
-footer ul li {
-	float:left;
-	margin:8px 10px 0;
-}
-footer ul li a{
-	display:inline-block;
-	background:#fff;
-	padding:5px 10px;
-	border-radius:3px;
-	color:#000;
-	font-weight:bold;
-}
-footer ul li input {
-	height:20px;
-	margin:0 0 0 2px;
-	width:20px;
-}
+
 
 
 
@@ -205,4 +170,33 @@ footer ul li input {
 	display:block;
 	font-size:3em;
 	line-height:1em;
+}
+
+
+
+
+/************/
+/* Buttons */
+
+footer ul {
+	display:inline-block;
+	margin:0 auto;
+	overflow:hidden;
+}
+footer ul li {
+	float:left;
+	margin:8px 10px 0;
+}
+footer ul li a{
+	display:inline-block;
+	background:#fff;
+	padding:5px 10px;
+	border-radius:3px;
+	color:#000;
+	font-weight:bold;
+}
+footer ul li input {
+	height:20px;
+	margin:0 0 0 2px;
+	width:20px;
 }
