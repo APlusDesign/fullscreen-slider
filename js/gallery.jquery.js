@@ -7,7 +7,7 @@
 		$this = null,
 		pluginName = "fullscreenSlider",
 		defaults = {
-			autoPlayState	: true,
+			autoPlayState	: false,
 			autoPlayTime 	: 4,
 			alignIMG 		: '',
 			boundary 		: $(document),

@@ -29,16 +29,13 @@ $(document).ready(function() {
 		alert(fullscreenPlugin.getCurrentSlide())
 	})
 
-	if(fullscreenPlugin.options.autoPlayState) {
-		$('.start').on('click', function(){
-			fullscreenPlugin.play();
-		})
-		$('.stop').on('click', function(){
-			fullscreenPlugin.stop();
-		})
-	} else {
-		$('.start').css({display: 'none'})
-		$('.stop').css({display: 'none'})
-	}
+	
+	$('.start').on('click', function(){
+		fullscreenPlugin.play();
+	})
+	$('.stop').on('click', function(){
+		fullscreenPlugin.stop();
+	})
+	
 
 });
