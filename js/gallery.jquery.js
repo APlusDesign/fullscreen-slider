@@ -1,4 +1,3 @@
-// TODO: resume autoplay on click of a thumb
 // TODO: add a pre-load images switch
 
 ;(function ( $, window, document, undefined ) {
@@ -8,7 +7,7 @@
 		$this = null,
 		pluginName = "fullscreenSlider",
 		defaults = {
-			autoPlayState	: false,
+			autoPlayState	: true,
 			autoPlayTime 	: 4,
 			alignIMG 		: '',
 			boundary 		: $(document),
@@ -89,20 +88,9 @@
 
 	var autoPlayHandler = function()
 	{
-		var allImg = $this.imageSRCLink.length;
-		autoPlayTimer = setTimeout(function(){
-
+		$this.autoPlayTimer = setTimeout(function(){
 			if($this.options.autoPlayState){
-				$this.prevImg = $this.currImg;
-				$this.currImg++;
-				if($this.currImg>=allImg){
-					$this.currImg = 0;
-				}
-				
-				thumbHandler($this.returnCurrentThumbnail($this.prevImg), true);
-				thumbHandler($this.returnCurrentThumbnail());
-				
-				$this.changeImageHandler();
+				$this.goTo($this.currImg+1);
 			}
 		}, $this.options.autoPlayTime*1000);
 	}
@@ -302,9 +290,9 @@
 	FullscreenSlider.prototype.goTo = function(index, obj) 
 	{
 		var newIndex = ($.isNumeric(index) ? parseInt(index) : $(obj).parent().index());
+		console.log(newIndex)
 		if (newIndex >= this.imageSRCLink.length ) {
-			console.log('FullscreenSlider :: Not a valid slide')
-			return false;
+			newIndex = 0;
 		}
 		if(!this.loadComplete) {
 			console.log('FullscreenSlider :: Still loading the other slide')
@@ -323,7 +311,7 @@
 			thumbHandler(currentThumb);
 
 			clearTimeout(this.autoPlayTimer);
-			this.options.autoPlayState = false;
+			//this.options.autoPlayState = false;
 			this.changeImageHandler();
 			return currentThumb;
 		} else {
@@ -353,12 +341,16 @@
 
 	FullscreenSlider.prototype.play = function() 
 	{
-		// todo
+		this.options.autoPlayState = true;
+		autoPlayHandler();
+		console.log('FullscreenSlider :: Auto play started')
 	}
 
 	FullscreenSlider.prototype.stop = function() 
 	{
-		// todo
+		this.options.autoPlayState = false;
+		clearTimeout(this.autoPlayTimer);
+		console.log('FullscreenSlider :: Auto play stopped')
 	}
 
 	FullscreenSlider.prototype.loading = function()

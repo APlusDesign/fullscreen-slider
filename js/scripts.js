@@ -8,23 +8,37 @@ $(document).ready(function() {
 	});
 
 	console.log(slider.data())
-	
+
 	// Buttons
 
+	var fullscreenPlugin = slider.data('fullscreenSlider');
+
 	$('.prev').on('click', function(){
-		slider.data('fullscreenSlider').goToPrev();
+		fullscreenPlugin.goToPrev();
 	})
 
 	$('.next').on('click', function(){
-		slider.data('fullscreenSlider').goToNext();
+		fullscreenPlugin.goToNext();
 	})
 
 	$('.goto').on('click', function(){
-		slider.data('fullscreenSlider').goTo($('.goto-input').val());
+		fullscreenPlugin.goTo($('.goto-input').val());
 	})
 
 	$('.current').on('click', function(){
-		alert(slider.data('fullscreenSlider').getCurrentSlide())
+		alert(fullscreenPlugin.getCurrentSlide())
 	})
+
+	if(fullscreenPlugin.options.autoPlayState) {
+		$('.start').on('click', function(){
+			fullscreenPlugin.play();
+		})
+		$('.stop').on('click', function(){
+			fullscreenPlugin.stop();
+		})
+	} else {
+		$('.start').css({display: 'none'})
+		$('.stop').css({display: 'none'})
+	}
 
 });

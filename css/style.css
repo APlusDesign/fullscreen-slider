@@ -188,12 +188,17 @@ footer ul li {
 	margin:8px 10px 0;
 }
 footer ul li a{
+	transition:all 0.25s linear;
 	display:inline-block;
 	background:#fff;
 	padding:5px 10px;
 	border-radius:3px;
 	color:#000;
 	font-weight:bold;
+}
+footer ul li a:hover{
+	background:#42aeff;
+	
 }
 footer ul li input {
 	height:20px;
