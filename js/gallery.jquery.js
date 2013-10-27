@@ -1,4 +1,4 @@
-// TODO: add a pre-load images switch
+// TODO: add a pre-load images option
 
 ;(function ( $, window, document, undefined ) {
 
@@ -290,7 +290,6 @@
 	FullscreenSlider.prototype.goTo = function(index, obj) 
 	{
 		var newIndex = ($.isNumeric(index) ? parseInt(index) : $(obj).parent().index());
-		console.log(newIndex)
 		if (newIndex >= this.imageSRCLink.length ) {
 			newIndex = 0;
 		}
