@@ -4,11 +4,11 @@ $(document).ready(function() {
 	var slider = $('#gallery-holder')
 
 	slider.fullscreenSlider({
-		boundary: $('#gallery') // Default to document if not specified
+		boundary: $('#gallery')  // Defaults to document, is the container for your slider
 	});
 
 
-	console.log(slider.data())
+	// console.log(slider.data())
 
 	// Buttons
 

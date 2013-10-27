@@ -121,6 +121,7 @@ footer ul li input {
 	z-index: 0;
 }
 .thumb-holder{
+	display:block;
 	position: absolute;
 	top: 50%;
 	left: 50%;
@@ -129,11 +130,9 @@ footer ul li input {
 	margin-top: 218px;
 	z-index: 2;
 	opacity:0; /*this is important the app fades it in */
-}
-.thumb-holder ul{
 	overflow:hidden;
 }
-.thumb-holder ul>li{
+.thumb-holder li{
 	float: left;
 	margin-right: 5px;
 }
