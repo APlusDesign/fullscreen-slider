@@ -16,9 +16,9 @@ Not really.
 
 ###WHY is it different
 
-There are no free or commercial products that allow you to basically use the entire document space as your slider that handle large background imagery properly!
+There are no free or commercial products that allow you to use the entire document space as your slider while also handling large background imagery correctly!
 
-All the sliders I looked at load your images at the beginning and really destroy the user experience, imagine loading 5, 1mb images while your users stare at a blank screen, then the user never clicks the links that show them? Pretty silly right!
+All the sliders that currently exist for fullscreen use, try to load all images at the beginning. That destroys the user experience, imagine loading 5, 1mb image files while your users stare at a blank screen (yes this is how fullscreen sliders work currently), then the user never clicks the links that show those images? Pretty silly right!
 
 
 
@@ -38,15 +38,16 @@ Lots of public methods that let you control the slider outside of the plugin its
 So enjoy! :)
 
 
+###Options
+
+    autoPlayState	: false, 			// Bool: Auto play the slideshow (true || false)
+	autoPlayTime 	: 4,				// Int: The time between slides in seconds when auto play is set to true (1 - ?)
+	alignIMG 		: '',				// String: How to align the background image, defaults to center. Available (top, bottom, right, left, top_left, top_right, bottom_left, bottom_right)
+	boundary 		: $(document), 		// jQuery Object: The wrapper in which the slider sits, default to document as this is mean to be a fullscreen slider.
+	startAtSlide 	: 0 				// Int: Which slide to start at (1 - ?)
+
+
+
 ###Documentation
 
 Working on it :(
-
-
-###Options
-
-    autoPlayState	: false, 			// Auto play the slideshow (bool: true || false)
-	autoPlayTime 	: 4,				// The time between slides in seconds when auto play is set to true
-	alignIMG 		: "center",			// How to align the background image, defaults to center. Available (top, bottom, right, left, top_left, top_right, bottom_left, bottom_right)
-	boundary 		: $(document), 		// The wrapper in which the slider sits, default to document as this is mean to be a fullscreen slider.
-	startAtSlide 	: 0 				// Which slide to start at (int)

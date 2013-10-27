@@ -10,7 +10,7 @@
 		defaults = {
 			autoPlayState	: false,
 			autoPlayTime 	: 4,
-			alignIMG 		: "center",
+			alignIMG 		: '',
 			boundary 		: $(document),
 			startAtSlide 	: 0
 		};
