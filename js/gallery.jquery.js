@@ -52,9 +52,10 @@
 		$this.prevImg 		= null;
 		$this.loadComplete 	= true;
 		$this.autoPlayTimer;	
+		// This is actually very important
+		$this.options.boundary.css({'overflow':'hidden'})
 	};
 
-	
 	var setEvents = function()
 	{
 		// On first image load, remove loader, show image, trigger resize
@@ -164,8 +165,8 @@
 		if(off) {
 			arr = [false, {opacity:1}];
 		} 
-		aniHelper($(".bg-gallery-btn-over", obj), arr[0])
-		aniHelper($(".bg-gallery-btn-out", obj), arr[1])
+		aniHelper($(".fs-btn-over", obj), arr[0])
+		aniHelper($(".fs-btn-out", obj), arr[1])
 	}
 	var aniHelper = function(obj, style, stop, time) 
 	{
@@ -193,7 +194,7 @@
 	}
 	var createBtn = function(flag, css) 
 	{
-		return $('<div class="bg-gallery-btn"></div>').addClass('bg-gallery-btn-'+flag).css((css||{})) 
+		return $('<div class="fs-btn"></div>').addClass('fs-btn-'+flag).css((css||{})) 
 	}
 
 
