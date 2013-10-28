@@ -46,6 +46,7 @@ So enjoy! :)
 		alignIMG 		: STRING,			// How to align the background image, defaults to center. Available (top, bottom, right, left, top_left, top_right, bottom_left, bottom_right) :: Default is 'center'
 		boundary 		: jQuery OBJECT, 	// The wrapper in which the slider sits, default to document as this is mean to be a fullscreen slider. :: Default is $(document)
 		startAtSlide 	: INT 				// Which slide to start at (1 - ?) :: Default is 0
+		pauseNewImage 	: INT 				// You can set a pause time between loading of the background images :: Default is 0 seconds
 	} 
 
 

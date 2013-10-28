@@ -230,7 +230,7 @@
 				$this.loadComplete = true;
 				autoPlayHandler();
 			})
-		}, $this.options.pauseNewImage)
+		}, $this.options.pauseNewImage*1000)
 	}
 
 	FullscreenSlider.prototype.resizeImageHandler = function()
