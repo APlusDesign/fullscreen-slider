@@ -4,7 +4,7 @@ $(document).ready(function() {
 	var slider = $('.fullscreen-slider')
 
 	slider.fullscreenSlider({
-		boundary: $('#boundary')  // Defaults to document, is the container for your slider
+		boundary: $('#boundary')  // Defaults to window, it is the container for your slider
 	});
 
 	console.log(slider.data())

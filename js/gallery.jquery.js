@@ -1,6 +1,6 @@
-// TODO: add a pre-load images option
-// TODO: look at removing the first image logic in start() and push it into goTo
-// TODO: pausing on hover of thumbnails if in autoplay
+// TODO: add a pre-load images option, which defeats the sliders purpose, but hey...
+// TODO: look at removing the first image logic in start() and push it into goTo()
+// TODO: I should probably un-zero index the slides, but seriously...
 
 ;(function ( $, window, document, undefined ) {
 
@@ -34,6 +34,7 @@
 	*/	
 
 	var init = function() {
+		makeBoundary();
 		setElements();
 		setEvents();
 		start();
@@ -41,20 +42,16 @@
 
 	var setElements = function()
 	{
-		var lookIn 			= $this.obj;
 		$this.image 		= $('<img class="topImg">');
 		$this.lastImage		= null;
-		$this.imageHolder 	= $(".image-holder", lookIn);
-		$this.descriptions 	= $(".content-holder>li", lookIn); 	
+		$this.imageHolder 	= $(".image-holder", $this.obj);
+		$this.descriptions 	= $(".content-holder>li", $this.obj); 	
  		$this.thumbsHolder 	= $('<ul class="thumb-holder"></ul>');
  		$this.spinner 		= createSpinner();
 		$this.currImg 		= checkIndex();
 		$this.prevImg 		= null;
 		$this.loadComplete 	= true;
 		$this.autoPlayTimer;	
-		// This is actually very important
-		makeBoundary();
-		
 	};
 
 
@@ -62,7 +59,6 @@
 	{
 		// On first image load, remove loader, show image, trigger resize
 		$this.image.bind("load", firstImage);
-
 		// Bind the resize window event
 		$(window).on('resize.fullscreenSlider', function () {
 			$this.resizeImageHandler();
@@ -73,19 +69,16 @@
 	{
 		// Create a loading spinner while first image loads
 		$this.loading();
-
 		// Begin loading the first image
 		var source = $this.descriptions.eq($this.currImg);
 		$this.image.attr({
 			'src': source.data('image'),
 			'alt': source.data('alt')
 		});
-
-		// Show the description for image 1
+		// Show the description for current image
 		$this.descriptions.not($this.currImg).css({left:$this.options.boundary.width(), display:"none"});
 		source.css({left:0, display:"block"});
-
-		// Build the thumbnails now but don't show them until the first image has loaded.
+		// Build the thumbnails now, but don't show them until the current image has loaded.
 		buildThumbnails();
 	};
 
@@ -142,7 +135,7 @@
 			})
 		}
 	};
-	
+
 	/* Helpers */
 	var hoverHandler = function(obj, off) 
 	{
@@ -172,7 +165,7 @@
 	{
 		var index = $this.options.startAtSlide;
 		if(index >= $this.descriptions.length || !$.isNumeric(index)) {
-			talk('Invalid index, reset to slide 0');
+			talk('Invalid index, showing slide 0');
 			index = 0;
 		}
 		return index;
@@ -228,9 +221,9 @@
 		this.image = $("<img class='bottomImg' src='"+source.data("image")+"' alt='"+(source.data("alt") || '')+"'>").bind("load", this.loadImageHandler);
 		this.imageHolder.append(this.image);
 		
-		var boundary = this.options.boundary.width();
-		source.css({left:boundary, display:"block"}).animate({left:0}, 1000, "easeOutCubic");
-		this.descriptions.eq(this.prevImg).animate({left:-boundary}, 500, "easeInCubic", function(){
+		var boundaryWidth = this.options.boundary.width();
+		source.css({left:boundaryWidth, display:"block"}).animate({left:0}, 1000, "easeOutCubic");
+		this.descriptions.eq(this.prevImg).animate({left:-boundaryWidth}, 500, "easeInCubic", function(){
 			$(this).css({display:"none"})
 		});
 	}	
@@ -249,6 +242,7 @@
 				$this.loadComplete = true;
 				autoPlayHandler();
 			})
+			
 		}, 1000)
 	}
 
@@ -262,7 +256,7 @@
 			imageK  		= image.height()/image.width(),
 			holderK 		= boundary.height()/boundary.width(),
 			imagePercent 	= imageK*100;
-		console.log(boundary)
+		
 		if(holderK>imageK){
 			imagePercent = (image.width()/image.height())*100;
 			this.image.css({height:boundary.height(), width:(boundary.height()*imagePercent)/100});
@@ -314,11 +308,11 @@
 	{
 		var newIndex = parseInt(index);
 		if (!$.isNumeric(index) || newIndex >= this.descriptions.length ) {
-			talk('Invalid index, reset to slide 0')
+			talk('Invalid index, showing slide 0')
 			newIndex = 0;
 		}
 		if(!this.loadComplete) {
-			talk('Still loading the other slide')
+			talk('Still loading slide ' + this.currImg)
 			return false;
 		}
 		if(newIndex != this.currImg){
