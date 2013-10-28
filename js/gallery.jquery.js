@@ -85,8 +85,6 @@
 
 		// Build the thumbnails now but don't show them until the first image has loaded.
 		buildThumbnails();
-
-		talk('Started');
 	};
 
 	var firstImage = function() 
@@ -321,7 +319,6 @@
 
 			clearTimeout(this.autoPlayTimer);
 			this.changeImageHandler();
-			talk('Going to slide ' + newIndex);
 			return this;
 		} else {
 			talk('You can not reload the same index')
