@@ -39,7 +39,7 @@ header {
 	box-sizing: border-box;   
 	border-bottom: 1px solid #FFFFFF;
 	z-index: 1; 
-	overflow-y: scroll;
+	overflow-y: auto;
 	padding:5px 0 ;
 }
 
@@ -63,7 +63,7 @@ footer {
 
 
 /***********************************/
-/*-------------WRAPPER------------*/
+/*-------------BOUNDARY------------*/
 
 #boundary {
 	position: absolute;

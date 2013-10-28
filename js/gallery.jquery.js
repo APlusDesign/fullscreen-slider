@@ -12,7 +12,7 @@
 			autoPlayState	: false,
 			autoPlayTime 	: 4,
 			alignIMG 		: '',
-			boundary 		: $(document),
+			boundary 		: $(window),
 			startAtSlide 	: 0
 		};
 	
@@ -53,8 +53,10 @@
 		$this.loadComplete 	= true;
 		$this.autoPlayTimer;	
 		// This is actually very important
-		$this.options.boundary.css({'overflow':'hidden'})
+		makeBoundary();
+		
 	};
+
 
 	var setEvents = function()
 	{
@@ -126,7 +128,21 @@
 			thumbHandler($this.returnCurrentThumbnail());
 		}
 	}
-
+	
+	var makeBoundary = function()
+	{
+		if($this.options.boundary[0] === window) {
+			// Since we can't apply css to the window apply overflow hidden to body
+			$(document.body).css({
+				'overflow':'hidden'
+			})
+		} else {
+			$this.options.boundary.css({
+				'overflow':'hidden'
+			})
+		}
+	};
+	
 	/* Helpers */
 	var hoverHandler = function(obj, off) 
 	{
@@ -138,7 +154,7 @@
 	{
 		var arr = [{opacity:1}, false];
 		if(off) {
-			arr = [false, {opacity:1}];
+			arr.reverse();
 		} 
 		aniHelper($(".fs-btn-over", obj), arr[0])
 		aniHelper($(".fs-btn-out", obj), arr[1])
@@ -246,7 +262,7 @@
 			imageK  		= image.height()/image.width(),
 			holderK 		= boundary.height()/boundary.width(),
 			imagePercent 	= imageK*100;
-		
+		console.log(boundary)
 		if(holderK>imageK){
 			imagePercent = (image.width()/image.height())*100;
 			this.image.css({height:boundary.height(), width:(boundary.height()*imagePercent)/100});
