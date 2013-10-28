@@ -26,7 +26,7 @@ $(document).ready(function() {
 	})
 
 	$('.current').on('click', function(){
-		alert(fullscreenPlugin.getCurrentSlide())
+		fullscreenPlugin.getCurrentSlide()
 	})
 
 	

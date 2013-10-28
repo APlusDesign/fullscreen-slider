@@ -85,6 +85,8 @@
 
 		// Build the thumbnails now but don't show them until the first image has loaded.
 		buildThumbnails();
+
+		talk('Started');
 	};
 
 	var firstImage = function() 
@@ -156,13 +158,15 @@
 	{
 		var index = $this.options.startAtSlide;
 		if(index >= $this.descriptions.length || !$.isNumeric(index)) {
-			talk('Invalid starting index, reset to slide 0');
+			talk('Invalid index, reset to slide 0');
 			index = 0;
 		}
 		return index;
 	}
 	var talk = function(str) {
-		console.log(pluginName, str)
+		if($('#console').length) {
+			$('#console').prepend($('<p></p>').html(pluginName + ' :: ' + str))
+		}
 	}
 	/* Factory functions */
 	var createSpinner = function() 
@@ -296,7 +300,7 @@
 	{
 		var newIndex = parseInt(index);
 		if (!$.isNumeric(index) || newIndex >= this.descriptions.length ) {
-			talk('Invalid starting index, reset to slide 0')
+			talk('Invalid index, reset to slide 0')
 			newIndex = 0;
 		}
 		if(!this.loadComplete) {
@@ -317,6 +321,7 @@
 
 			clearTimeout(this.autoPlayTimer);
 			this.changeImageHandler();
+			talk('Going to slide ' + newIndex);
 			return this;
 		} else {
 			talk('You can not reload the same index')
@@ -385,6 +390,7 @@
 
 	FullscreenSlider.prototype.getCurrentSlide = function() 
 	{
+		talk('Current slide is ' + this.currImg)
 		return this.currImg;
 	}
 
