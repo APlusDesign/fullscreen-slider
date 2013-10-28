@@ -3,7 +3,7 @@ fullscreen-slider
 
 Fullscreen fluid background gallery slider
 
-Demo v.0.1.1
+Demo v.1.0
 
 www.aplusdesign.com.au/demos/fullscreen-slider
 
