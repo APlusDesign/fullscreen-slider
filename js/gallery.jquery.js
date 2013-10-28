@@ -1,10 +1,9 @@
 // TODO: add a pre-load images option, which defeats the sliders purpose, but hey...
-// TODO: look at removing the first image logic in start() and push it into goTo()
 // TODO: I should probably un-zero index the slides, but seriously...
 
 ;(function ( $, window, document, undefined ) {
 
-	// Create the defaults once
+	// Create the defaults once ever
 	var 
 		$this = null,
 		pluginName = "fullscreenSlider",
@@ -13,7 +12,8 @@
 			autoPlayTime 	: 4,
 			alignIMG 		: '',
 			boundary 		: $(window),
-			startAtSlide 	: 0
+			startAtSlide 	: 0,
+			pauseNewImage	: 0
 		};
 	
 	// The actual plugin constructor
@@ -26,7 +26,6 @@
 		this.name 		= pluginName;
 		init();
 	}
-
 
 	/******************* 
 	 Private methods 
@@ -42,9 +41,9 @@
 
 	var setElements = function()
 	{
-		$this.image 		= $('<img class="topImg">');
-		$this.lastImage		= null;
-		$this.imageHolder 	= $(".image-holder", $this.obj);
+		$this.image 		= $('<div class="topImg loading-placeholder"></div>');
+		$this.lastImage		= false;
+		$this.imageHolder 	= $(".image-holder", $this.obj).append($this.image);
 		$this.descriptions 	= $(".content-holder>li", $this.obj); 	
  		$this.thumbsHolder 	= $('<ul class="thumb-holder"></ul>');
  		$this.spinner 		= createSpinner();
@@ -54,11 +53,8 @@
 		$this.autoPlayTimer;	
 	};
 
-
 	var setEvents = function()
 	{
-		// On first image load, remove loader, show image, trigger resize
-		$this.image.bind("load", firstImage);
 		// Bind the resize window event
 		$(window).on('resize.fullscreenSlider', function () {
 			$this.resizeImageHandler();
@@ -69,31 +65,19 @@
 	{
 		// Create a loading spinner while first image loads
 		$this.loading();
-		// Begin loading the first image
-		var source = $this.descriptions.eq($this.currImg);
-		$this.image.attr({
-			'src': source.data('image'),
-			'alt': source.data('alt')
-		});
-		// Show the description for current image
-		$this.descriptions.not($this.currImg).css({left:$this.options.boundary.width(), display:"none"});
-		source.css({left:0, display:"block"});
-		// Build the thumbnails now, but don't show them until the current image has loaded.
+		// Hide all descriptions
+		$this.descriptions.css({left:$this.options.boundary.width(), display:"none"});
+		// Go to the specified slide
+		$this.goTo($this.currImg);
+		// On first load, there is a little logic
+		$this.image.bind("load", firstLoad);
+		// Build the thumbnails now, but don't show them until this image has loaded.
 		buildThumbnails();
 	};
 
-	var firstImage = function() 
+	var firstLoad = function() 
 	{
-		// Unloading animation
-		$this.unloading();
-		// Append the image and fade it in
-		$this.imageHolder.append($this.image.css('opacity', 0).animate({opacity:1}, 1500, "easeInOutCubic"));
-		// Show the thumbnail menu
-		$this.thumbsHolder.animate({opacity:1}, 1500, "easeInOutCubic");
-		// Make sure sizing is correct
-		$(window).trigger('resize');
-		// Auto play
-		autoPlayHandler();
+		$this.thumbsHolder.animate({opacity:1}, 1000, "easeInOutCubic");
 	}
 
 	var autoPlayHandler = function()
@@ -212,28 +196,32 @@
 
 	FullscreenSlider.prototype.changeImageHandler = function()
 	{
-		var source = this.descriptions.eq(this.currImg);
+		var 
+			source = this.descriptions.eq(this.currImg),
+			boundaryWidth = this.options.boundary.width();
 
+		// Set loading visual and bool
 		this.loadComplete = false;
-		this.loading();	
-		this.lastImage = this.image;
-
-		this.image = $("<img class='bottomImg' src='"+source.data("image")+"' alt='"+(source.data("alt") || '')+"'>").bind("load", this.loadImageHandler);
-		this.imageHolder.append(this.image);
-		
-		var boundaryWidth = this.options.boundary.width();
+		this.loading();
+		// Remove the current description and animate in the new one
+		if(this.lastImage) {
+			this.descriptions.eq(this.prevImg).animate({left:-boundaryWidth}, 500, "easeInCubic", function(){
+				$(this).css({display:"none"})
+			});
+		}
 		source.css({left:boundaryWidth, display:"block"}).animate({left:0}, 1000, "easeOutCubic");
-		this.descriptions.eq(this.prevImg).animate({left:-boundaryWidth}, 500, "easeInCubic", function(){
-			$(this).css({display:"none"})
-		});
+		// Save copy of current image	
+		this.lastImage = this.image;
+		// Create new image
+		this.image = $("<img class='bottomImg' src='"+source.data("image")+"' alt='"+(source.data("alt") || '')+"'>").bind("load", this.loadImageHandler);
+		// Append new image
+		this.imageHolder.append(this.image);
 	}	
 
 	FullscreenSlider.prototype.loadImageHandler = function()
 	{
 		setTimeout(function(){
-			// Unloading animation
 			$this.unloading();
-			// New image
 			$this.image.unbind("load", this.loadImageHandler);
 			$this.resizeImageHandler();
 			$this.lastImage.stop().animate({opacity:"0"}, 1000, "easeInOutCubic", function(){
@@ -242,8 +230,7 @@
 				$this.loadComplete = true;
 				autoPlayHandler();
 			})
-			
-		}, 1000)
+		}, $this.options.pauseNewImage)
 	}
 
 	FullscreenSlider.prototype.resizeImageHandler = function()
@@ -315,18 +302,14 @@
 			talk('Still loading slide ' + this.currImg)
 			return false;
 		}
-		if(newIndex != this.currImg){
-			
+		if(newIndex != this.currImg || !this.lastImage){
 			// Remove old thumbs styles
 			thumbHandler(this.returnCurrentThumbnail(), true);
-
+			// Swap the index's
 			this.prevImg = this.currImg;
 			this.currImg = newIndex;
-
 			// Add new thumbs styles
-			var currentThumb = this.returnCurrentThumbnail();
-			thumbHandler(currentThumb);
-
+			thumbHandler(this.returnCurrentThumbnail());
 			clearTimeout(this.autoPlayTimer);
 			this.changeImageHandler();
 			return this;
@@ -335,7 +318,6 @@
 			return false;
 		}
 	}
-
 
 	FullscreenSlider.prototype.goToNext = function() 
 	{
