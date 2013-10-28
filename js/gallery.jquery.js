@@ -1,4 +1,6 @@
 // TODO: add a pre-load images option
+// TODO: look at removing the first image logic in start() and push it into goTo
+// TODO: pausing on hover of thumbnails if in autoplay
 
 ;(function ( $, window, document, undefined ) {
 
@@ -43,9 +45,8 @@
 		$this.image 		= $('<img class="topImg">');
 		$this.lastImage		= null;
 		$this.imageHolder 	= $(".image-holder", lookIn);
-		$this.discription 	= $(".content-holder>li", lookIn); 	// I know it's misspelt, but in IE its a reserved word :p
- 		$this.thumbsHolder 	= $(".thumb-holder", lookIn);
- 		$this.imageSRCLink 	= $("li>a", $this.thumbsHolder);
+		$this.descriptions 	= $(".content-holder>li", lookIn); 	
+ 		$this.thumbsHolder 	= $('<ul class="thumb-holder"></ul>');
  		$this.spinner 		= createSpinner();
 		$this.currImg 		= checkIndex();
 		$this.prevImg 		= null;
@@ -72,28 +73,19 @@
 		$this.loading();
 
 		// Begin loading the first image
-		var source = $($this.imageSRCLink[$this.currImg]);
+		var source = $this.descriptions.eq($this.currImg);
 		$this.image.attr({
-			'src': source.attr('href'),
-			'alt': source.attr('title')
+			'src': source.data('image'),
+			'alt': source.data('alt')
 		});
 
 		// Show the description for image 1
-		$this.discription.not($this.currImg).css({left:$this.options.boundary.width(), display:"none"});
-		$this.discription.eq($this.currImg).css({left:0, display:"block"});
+		$this.descriptions.not($this.currImg).css({left:$this.options.boundary.width(), display:"none"});
+		source.css({left:0, display:"block"});
 
 		// Build the thumbnails now but don't show them until the first image has loaded.
 		buildThumbnails();
 	};
-
-	var autoPlayHandler = function()
-	{
-		$this.autoPlayTimer = setTimeout(function(){
-			if($this.options.autoPlayState){
-				$this.goTo($this.currImg+1);
-			}
-		}, $this.options.autoPlayTime*1000);
-	}
 
 	var firstImage = function() 
 	{
@@ -109,41 +101,36 @@
 		autoPlayHandler();
 	}
 
-	var buildThumbnails = function() 
+	var autoPlayHandler = function()
 	{
-		/*-----thumbnail----*/
-		var thumbs = $this.imageSRCLink;
-		if(thumbs.length!=0){
+		$this.autoPlayTimer = setTimeout(function(){
+			if($this.options.autoPlayState){
+				$this.goTo($this.currImg+1);
+			}
+		}, $this.options.autoPlayTime*1000);
+	}
+
+	var buildThumbnails = function() 
+	{	
+		var tmp = $this.descriptions;
+		if(tmp.length!=0){
 			//$("#inner").bind("mousemove", function(e){mouseMove(e)})
 			//$("#inner").bind("mouseleave", stopPreviewPosition)
-			thumbs.each(function(){
-				var thumb = $(this);
-					thumb.append(createBtn('over', {opacity:0}));
-					thumb.append(createBtn('out'));
-			}).click(
-				function(e){
-					e.preventDefault();
-					$this.goTo(null, this);
-					return false;			
-				}
-			).hover(
-				function(){
-					hoverHandler(this);
-				},
-				function(){
-					hoverHandler(this, true);
-				}
-			);
+			tmp.each(function(){
+				// thumbsHolder is not in the dom yet, so this approach is perfectly fine!		
+				$this.thumbsHolder.append($('<li></li>').append(createThumb()));
+			})
+			// Append thumbs into the slider object
+			$this.obj.append($this.thumbsHolder);
 			// Activate first thumb
-			var thumb = $this.returnCurrentThumbnail();
-			thumbHandler(thumb);
+			thumbHandler($this.returnCurrentThumbnail());
 		}
 	}
 
 	/* Helpers */
 	var hoverHandler = function(obj, off) 
 	{
-		if($this.isNotCurrentIndex($(obj))){
+		if($(obj).parent().index()!=$this.currImg){
 			thumbHandler(obj, off);
 		}
 	}
@@ -168,21 +155,44 @@
 	var checkIndex = function() 
 	{
 		var index = $this.options.startAtSlide;
-		if(index >= $this.imageSRCLink.length || !$.isNumeric(index)) {
-			console.log('FullscreenSlider :: Invalid starting index')
+		if(index >= $this.descriptions.length || !$.isNumeric(index)) {
+			talk('Invalid starting index, reset to slide 0');
 			index = 0;
 		}
 		return index;
 	}
-
-	/* Factory */
+	var talk = function(str) {
+		console.log(pluginName, str)
+	}
+	/* Factory functions */
 	var createSpinner = function() 
 	{
-		return $('<div class="imgSpinner"></div>')
+		return $('<div class="imgSpinner"></div>');
 	}
 	var createBtn = function(flag, css) 
 	{
-		return $('<div class="fs-btn"></div>').addClass('fs-btn-'+flag).css((css||{})) 
+		return $('<div class="fs-btn"></div>').addClass('fs-btn-'+flag).css((css||{}));
+	}
+	var createThumb = function() 
+	{
+		return $('<a href="#"></a>')
+					.click(
+						function(e){
+							e.preventDefault();
+							$this.goTo($(this).parent().index());
+							return false;			
+						}
+					)
+					.hover(
+						function(){
+							hoverHandler(this);
+						},
+						function(){
+							hoverHandler(this, true);
+						}
+					)
+					.append(createBtn('over', {opacity:0}))
+					.append(createBtn('out'));
 	}
 
 
@@ -191,24 +201,20 @@
 
 	FullscreenSlider.prototype.changeImageHandler = function()
 	{
-		var 
-			source = this.imageSRCLink.eq(this.currImg);
+		var source = this.descriptions.eq(this.currImg);
 
 		this.loadComplete = false;
 		this.loading();	
 		this.lastImage = this.image;
 
-		this.image = $("<img class='bottomImg' src='"+source.attr("href")+"' alt='"+(source.attr("title") || '')+"'>").bind("load", this.loadImageHandler);
+		this.image = $("<img class='bottomImg' src='"+source.data("image")+"' alt='"+(source.data("alt") || '')+"'>").bind("load", this.loadImageHandler);
 		this.imageHolder.append(this.image);
 		
-
 		var boundary = this.options.boundary.width();
-		this.discription.eq(this.currImg).css({left:boundary, display:"block"}).animate({left:0}, 1000, "easeOutCubic");
-		this.discription.eq(this.prevImg).animate({left:-boundary}, 500, "easeInCubic", function(){
+		source.css({left:boundary, display:"block"}).animate({left:0}, 1000, "easeOutCubic");
+		this.descriptions.eq(this.prevImg).animate({left:-boundary}, 500, "easeInCubic", function(){
 			$(this).css({display:"none"})
 		});
-
-
 	}	
 
 	FullscreenSlider.prototype.loadImageHandler = function()
@@ -230,7 +236,8 @@
 
 	FullscreenSlider.prototype.resizeImageHandler = function()
 	{
-		var imageDeltaX,
+		var 
+			imageDeltaX,
 			imageDeltaY,
 			boundary 		= this.options.boundary,
 			image 			= this.image,
@@ -238,7 +245,6 @@
 			holderK 		= boundary.height()/boundary.width(),
 			imagePercent 	= imageK*100;
 		
-
 		if(holderK>imageK){
 			imagePercent = (image.width()/image.height())*100;
 			this.image.css({height:boundary.height(), width:(boundary.height()*imagePercent)/100});
@@ -284,17 +290,17 @@
 				imageDeltaY=-(image.height()-boundary.height())/2;
 		}
 		this.image.css({left:imageDeltaX, top:imageDeltaY, position:"absolute"});
-		//changePreviewPosition(0)
 	}
 
-	FullscreenSlider.prototype.goTo = function(index, obj) 
+	FullscreenSlider.prototype.goTo = function(index) 
 	{
-		var newIndex = ($.isNumeric(index) ? parseInt(index) : $(obj).parent().index());
-		if (newIndex >= this.imageSRCLink.length ) {
+		var newIndex = parseInt(index);
+		if (!$.isNumeric(index) || newIndex >= this.descriptions.length ) {
+			talk('Invalid starting index, reset to slide 0')
 			newIndex = 0;
 		}
 		if(!this.loadComplete) {
-			console.log('FullscreenSlider :: Still loading the other slide')
+			talk('Still loading the other slide')
 			return false;
 		}
 		if(newIndex != this.currImg){
@@ -310,11 +316,10 @@
 			thumbHandler(currentThumb);
 
 			clearTimeout(this.autoPlayTimer);
-			//this.options.autoPlayState = false;
 			this.changeImageHandler();
-			return currentThumb;
+			return this;
 		} else {
-			console.log('FullscreenSlider :: You can not reload the same index')
+			talk('You can not reload the same index')
 			return false;
 		}
 	}
@@ -322,34 +327,36 @@
 
 	FullscreenSlider.prototype.goToNext = function() 
 	{
-		var tmp = this.currImg+1;
-		if(tmp >= this.imageSRCLink.length) {
-			tmp = 0;
+		var index = this.currImg+1;
+		if(index >= this.descriptions.length) {
+			index = 0;
 		}
-		return this.goTo(tmp);
+		return this.goTo(index);
 	}
 
 	FullscreenSlider.prototype.goToPrev = function() 
 	{
-		var tmp = this.currImg-1;
-		if(tmp < 0) {
-			tmp = this.imageSRCLink.length-1;
+		var index = this.currImg-1;
+		if(index < 0) {
+			index = this.descriptions.length-1;
 		}
-		return this.goTo(tmp);
+		return this.goTo(index);
 	}
 
 	FullscreenSlider.prototype.play = function() 
 	{
 		this.options.autoPlayState = true;
 		autoPlayHandler();
-		console.log('FullscreenSlider :: Auto play started')
+		talk('Auto play started');
+		return this;
 	}
 
 	FullscreenSlider.prototype.stop = function() 
 	{
 		this.options.autoPlayState = false;
 		clearTimeout(this.autoPlayTimer);
-		console.log('FullscreenSlider :: Auto play stopped')
+		talk('Auto play stopped');
+		return this;
 	}
 
 	FullscreenSlider.prototype.loading = function()
@@ -368,11 +375,6 @@
 		spinner.animate({opacity:0}, 600, "easeInOutCubic", function(){
 			spinner.remove();
 		});
-	}
-	
-	FullscreenSlider.prototype.isNotCurrentIndex = function(o) 
-	{
-		return (o.parent().index()!=this.currImg);
 	}
 	
 	FullscreenSlider.prototype.returnCurrentThumbnail = function(index) 
