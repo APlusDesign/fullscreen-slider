@@ -40,8 +40,8 @@ So enjoy! :)
 
 ###Options
     
-    {
-	    autoPlayState	: BOOL, 			// Auto play the slideshow (true || false) :: Default is false
+	{
+		autoPlayState	: BOOL, 			// Auto play the slideshow (true || false) :: Default is false
 		autoPlayTime 	: INT,				// The time between slides in seconds when auto play is set to true (1 - ?) :: Default is 4 seconds
 		alignIMG 		: STRING,			// How to align the background image, defaults to center. Available (top, bottom, right, left, top_left, top_right, bottom_left, bottom_right) :: Default is 'center'
 		boundary 		: jQuery OBJECT, 	// The wrapper in which the slider sits, default to document as this is mean to be a fullscreen slider. :: Default is $(document)
