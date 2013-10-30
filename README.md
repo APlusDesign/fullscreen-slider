@@ -52,8 +52,13 @@ So enjoy! :)
 
 ###Documentation
 
-Working on it :(
+There is some breief documentation here
+
+[Documentation](http://www.aplusdesign.com.au/blog/fullscreen-background-slider-jquery-plugin/ "Fullscreen slider")
 
 
 
+
+.
+.
 [A+Design](http://www.aplusdesign.com.au "Cuting edge web development")
