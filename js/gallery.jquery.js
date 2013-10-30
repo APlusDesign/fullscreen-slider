@@ -23,15 +23,22 @@
 		this.options 	= $.extend( {}, defaults, options );
 		this.defaults 	= defaults;
 		this.name 		= pluginName;
-		this.init();
+		init.apply(this);
 	}
 
-	FullscreenSlider.prototype.init = function() {
-		this.makeBoundary();
-		this.setElements();
+
+	/******************* 
+	 Private methods 
+	  	There is simply no need to expose these
+	*/
+
+	// I don't want the init methods exposed because, well you should not be able to init a second time, on the same objects.
+	var init = function() {
+		makeBoundary(this.options.boundary);
+		setElements.apply(this);
 		if(this.descriptions.length) {
-			this.setEvents();
-			this.start();
+			setEvents.apply(this);
+			start.apply(this);
 		} else {
 			talk('There are no description elements');
 			talk('Has not been started');
@@ -39,30 +46,30 @@
 		}	
 	}
 
-	FullscreenSlider.prototype.setElements = function()
+	var setElements = function()
 	{
 		this.image 			= $('<div class="topImg loading-placeholder"></div>');
 		this.lastImage		= false;
 		this.imageHolder 	= $(".image-holder", this.obj).append(this.image);
 		this.descriptions 	= $(".content-holder>li", this.obj); 	
  		this.thumbsHolder 	= $('<ul class="thumb-holder"></ul>');
- 		this.spinner 		= createSpinner();
-		this.currImg 		= this.checkIndex();
+ 		this.spinner 		= this.createSpinner();
+		this.currImg 		= checkIndex(this);
 		this.prevImg 		= null;
 		this.loadComplete 	= true;
 		this.autoPlayTimer;	
-	};
+	}
 
-	FullscreenSlider.prototype.setEvents = function()
+	var setEvents = function()
 	{
 		var $this = this;
 		// Bind the resize window event
 		$(window).on('resize.fullscreenSlider', function () {
 			$this.resizeImageHandler();
 		})
-	};
+	}
 
-	FullscreenSlider.prototype.start = function()
+	var start = function()
 	{
 		// Create a loading spinner while first image loads
 		this.loading();
@@ -71,12 +78,26 @@
 		// Go to the specified slide
 		this.goTo(this.currImg);
 		// On first load, there is a little logic
-		this.image.bind("load", this.firstLoad.bind(this));
+		this.image.bind("load", firstLoad.apply(this, arguments));
 		// Build the thumbnails now, but don't show them until this image has loaded.
 		this.buildThumbnails();
-	};
+	}
 
-	FullscreenSlider.prototype.firstLoad = function() 
+	var makeBoundary = function(boundary)
+	{
+		if(boundary[0] === window) {
+			// Since we can't apply css to the window apply overflow hidden to body
+			$(document.body).css({
+				'overflow':'hidden'
+			})
+		} else {
+			boundary.css({
+				'overflow':'hidden'
+			})
+		}
+	}
+
+	var firstLoad = function() 
 	{
 		if(!this.options.hideThumbs) {
 			this.thumbsHolder.animate({opacity:1}, 1000, "easeInOutCubic");
@@ -84,6 +105,46 @@
 			this.thumbsHolder.css({'display':'none'})
 		}
 	}
+
+	var talk = function(str) {
+		if($('#console').length) {
+			$('#console').prepend($('<p></p>').html(pluginName + ' :: ' + str))
+		}
+	}
+
+	var aniHelper = function(obj, style, stop, time) 
+	{
+		var 
+			delta 	= (time || 600),
+			css 	= (style || {opacity:0}),
+			bool 	= (stop || false);
+
+		obj.stop(bool).animate(css, delta, "easeInOutCubic");	
+	}
+
+	var thumbHandler = function(obj, off) 
+	{
+		var arr = [{opacity:1}, false];
+		if(off) {
+			arr.reverse();
+		} 
+		aniHelper($(".fs-btn-over", obj), arr[0])
+		aniHelper($(".fs-btn-out", obj), arr[1])
+	}
+
+	var checkIndex = function($this) 
+	{
+		var index = $this.options.startAtSlide;
+		if(index >= $this.descriptions.length || !jQuery.isNumeric(index)) {
+			talk('Invalid index');
+			index = 0;
+		}
+		return index;
+	}
+
+
+	/*******************/
+	/* Public Methods */
 
 	FullscreenSlider.prototype.autoPlayHandler = function()
 	{
@@ -113,102 +174,6 @@
 			thumbHandler(this.returnCurrentThumbnail());
 		}
 	}
-	
-	FullscreenSlider.prototype.makeBoundary = function()
-	{
-		if(this.options.boundary[0] === window) {
-			// Since we can't apply css to the window apply overflow hidden to body
-			$(document.body).css({
-				'overflow':'hidden'
-			})
-		} else {
-			this.options.boundary.css({
-				'overflow':'hidden'
-			})
-		}
-	};
-	
-	FullscreenSlider.prototype.hoverHandler = function(obj, off) 
-	{
-		if($(obj).parent().index()!=this.currImg){
-			thumbHandler(obj, off);
-		}
-	}
-	
-	FullscreenSlider.prototype.checkIndex = function() 
-	{
-		var index = this.options.startAtSlide;
-		if(index >= this.descriptions.length || !$.isNumeric(index)) {
-			talk('Invalid index');
-			index = 0;
-		}
-		return index;
-	}
-	
-	FullscreenSlider.prototype.createThumb = function() 
-	{	
-		var $this = this;
-		return $('<a href="#"></a>')
-					.click(
-						function(e){
-							e.preventDefault();
-							$this.goTo($(this).parent().index());
-							return false;			
-						}
-					)
-					.hover(
-						function(){
-							$this.hoverHandler(this);
-						},
-						function(){
-							$this.hoverHandler(this, true);
-						}
-					)
-					.append(createBtn('over', {opacity:0}))
-					.append(createBtn('out'));
-	}
-
-
-	/******************* 
-	 Private methods 
-	  	There is simply no need to expose these
-	*/
-	var createSpinner = function() 
-	{
-		return $('<div class="imgSpinner"></div>');
-	}
-	var createBtn = function(flag, css) 
-	{
-		return $('<div class="fs-btn"></div>').addClass('fs-btn-'+flag).css((css||{}));
-	}
-	var talk = function(str) {
-		if($('#console').length) {
-			$('#console').prepend($('<p></p>').html(pluginName + ' :: ' + str))
-		}
-	}
-	var aniHelper = function(obj, style, stop, time) 
-	{
-		var 
-			delta 	= (time || 600),
-			css 	= (style || {opacity:0}),
-			bool 	= (stop || false);
-
-		obj.stop(bool).animate(css, delta, "easeInOutCubic");	
-	}
-	var thumbHandler = function(obj, off) 
-	{
-		var arr = [{opacity:1}, false];
-		if(off) {
-			arr.reverse();
-		} 
-		aniHelper($(".fs-btn-over", obj), arr[0])
-		aniHelper($(".fs-btn-out", obj), arr[1])
-	}
-
-
-
-	/*******************/
-	/* Public Methods */
 
 	FullscreenSlider.prototype.changeImageHandler = function()
 	{
@@ -308,10 +273,17 @@
 		this.image.css({left:imageDeltaX, top:imageDeltaY, position:"absolute"});
 	}
 
+	FullscreenSlider.prototype.hoverHandler = function(obj, off) 
+	{
+		if($(obj).parent().index()!=this.currImg){
+			thumbHandler(obj, off);
+		}
+	}
+
 	FullscreenSlider.prototype.goTo = function(index) 
 	{
 		var newIndex = parseInt(index);
-		if (!$.isNumeric(index) || newIndex >= this.descriptions.length ) {
+		if (!jQuery.isNumeric(index) || newIndex >= this.descriptions.length ) {
 			talk('Invalid index, showing slide 0')
 			newIndex = 0;
 		}
@@ -390,7 +362,7 @@
 	
 	FullscreenSlider.prototype.returnCurrentThumbnail = function(index) 
 	{
-		var newIndex = ($.isNumeric(index) ? parseInt(index) : this.currImg);
+		var newIndex = (jQuery.isNumeric(index) ? parseInt(index) : this.currImg);
 		return $("li", this.thumbsHolder).eq(newIndex);
 	}
 
@@ -400,7 +372,45 @@
 		return this.currImg;
 	}
 
-	
+
+	/********************/
+	/* Factory objects */
+
+	FullscreenSlider.prototype.createSpinner = function() 
+	{
+		return $('<div class="imgSpinner"></div>');
+	}
+
+	FullscreenSlider.prototype.createBtn = function(flag, css) 
+	{
+		return $('<div class="fs-btn"></div>').addClass('fs-btn-'+flag).css((css||{}));
+	}
+
+	FullscreenSlider.prototype.createThumb = function() 
+	{	
+		var $this = this;
+		return $('<a href="#"></a>')
+					.click(
+						function(e){
+							e.preventDefault();
+							$this.goTo($(this).parent().index());
+							return false;			
+						}
+					)
+					.hover(
+						function(){
+							$this.hoverHandler(this);
+						},
+						function(){
+							$this.hoverHandler(this, true);
+						}
+					)
+					.append($this.createBtn('over', {opacity:0}))
+					.append($this.createBtn('out'));
+	}
+
+
+	/***************/
 	// Constructor
 	$.fn[ pluginName ] = function ( options ) {
 		return this.each(function() {
